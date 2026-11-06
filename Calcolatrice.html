@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Semi-Calcolatrice Modular</title>
+  <style>
+    :root {
+      --bg-color: #f4f6f9;
+      --card-bg: #ffffff;
+      --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
+      --accent-color: #10b981;
+      --accent-hover: #059669;
+      --text-color: #1e293b;
+      --border-color: #cbd5e1;
+      --radius: 12px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* Struttura principale della scheda */
+    .calculator-card {
+      background: var(--card-bg);
+      padding: 28px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      width: 100%;
+      max-width: 360px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .calculator-title {
+      text-align: center;
+      color: var(--text-color);
+      font-size: 1.25rem;
+    }
+
+    /* Input di testo */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--radius) - 4px);
+      font-size: 1rem;
+      text-align: right;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: var(--primary-color);
+    }
+
+    /* Griglia pulsanti operatore */
+    .operations-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .btn {
+      padding: 14px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border: 1px solid var(--border-color);
+      border-radius: calc(var(--radius) - 4px);
+      background: #f8fafc;
+      color: var(--text-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-op.active {
+      background-color: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    /* Pulsante per il calcolo */
+    .btn-equals {
+      width: 100%;
+      background-color: var(--accent-color);
+      color: white;
+      border-color: var(--accent-color);
+    }
+
+    .btn-equals:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* Area per visualizzare il risultato */
+    .result-display {
+      padding: 14px;
+      background-color: #f1f5f9;
+      border-radius: calc(var(--radius) - 4px);
+      text-align: center;
+      font-weight: 600;
+      color: var(--text-color);
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator-card">
+    <h2 class="calculator-title">Semi-Calcolatrice</h2>
+
+    <div class="input-group">
+      <input type="text" id="num1" placeholder="Primo numero" autocomplete="off">
+      <input type="text" id="num2" placeholder="Secondo numero" autocomplete="off">
+    </div>
+
+    <div class="operations-grid">
+      <button type="button" class="btn btn-op" data-op="+">+</button>
+      <button type="button" class="btn btn-op" data-op="-">-</button>
+      <button type="button" class="btn btn-op" data-op="*">&times;</button>
+      <button type="button" class="btn btn-op" data-op="/">/</button>
+    </div>
+
+    <div class="action-group">
+      <button type="button" id="btn-equals" class="btn btn-equals">=</button>
+    </div>
+
+    <div class="result-display" id="result-display">
+      Seleziona un'operazione e premi =
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const num1Input = document.getElementById('num1');
+      const num2Input = document.getElementById('num2');
+      const opButtons = document.querySelectorAll('.btn-op');
+      const equalsBtn = document.getElementById('btn-equals');
+      const resultDisplay = document.getElementById('result-display');
+
+      let selectedOperation = null;
+
+      // Gestione selezione operatore
+      opButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          opButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          selectedOperation = button.dataset.op;
+        });
+      });
+
+      // Calcolo del risultato
+      equalsBtn.addEventListener('click', () => {
+        const val1 = parseFloat(num1Input.value.replace(',', '.'));
+        const val2 = parseFloat(num2Input.value.replace(',', '.'));
+
+        if (isNaN(val1) || isNaN(val2)) {
+          resultDisplay.textContent = 'Inserisci numeri validi';
+          return;
+        }
+
+        if (!selectedOperation) {
+          resultDisplay.textContent = 'Seleziona un operatore';
+          return;
+        }
+
+        let result = 0;
+
+        switch (selectedOperation) {
+          case '+':
+            result = val1 + val2;
+            break;
+          case '-':
+            result = val1 - val2;
+            break;
+          case '*':
+            result = val1 * val2;
+            break;
+          case '/':
+            if (val2 === 0) {
+              resultDisplay.textContent = 'Impossibile dividere per 0';
+              return;
+            }
+            result = val1 / val2;
+            break;
+        }
+
+        resultDisplay.textContent = `Risultato: ${Number(result.toFixed(4))}`;
+      });
+    });
+  </script>
+
+</body>
+</html>
