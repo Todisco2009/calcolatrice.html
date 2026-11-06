@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Semi-Calcolatrice Modular</title>
+  <title>Semi-Calcolatrice Stringa</title>
   <style>
     :root {
       --bg-color: #f4f6f9;
       --card-bg: #ffffff;
       --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
       --accent-color: #10b981;
-      --accent-hover: #059669;
       --text-color: #1e293b;
       --border-color: #cbd5e1;
       --radius: 12px;
@@ -34,7 +32,6 @@
       padding: 20px;
     }
 
-    /* Struttura principale della scheda */
     .calculator-card {
       background: var(--card-bg);
       padding: 28px;
@@ -53,7 +50,6 @@
       font-size: 1.25rem;
     }
 
-    /* Input di testo */
     .input-group {
       display: flex;
       flex-direction: column;
@@ -68,14 +64,8 @@
       font-size: 1rem;
       text-align: right;
       outline: none;
-      transition: border-color 0.2s;
     }
 
-    .input-group input:focus {
-      border-color: var(--primary-color);
-    }
-
-    /* Griglia pulsanti operatore */
     .operations-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -91,11 +81,6 @@
       background: #f8fafc;
       color: var(--text-color);
       cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn:hover {
-      background: #e2e8f0;
     }
 
     .btn-op.active {
@@ -104,7 +89,6 @@
       border-color: var(--primary-color);
     }
 
-    /* Pulsante per il calcolo */
     .btn-equals {
       width: 100%;
       background-color: var(--accent-color);
@@ -112,11 +96,6 @@
       border-color: var(--accent-color);
     }
 
-    .btn-equals:hover {
-      background-color: var(--accent-hover);
-    }
-
-    /* Area per visualizzare il risultato */
     .result-display {
       padding: 14px;
       background-color: #f1f5f9;
@@ -162,9 +141,8 @@
       const equalsBtn = document.getElementById('btn-equals');
       const resultDisplay = document.getElementById('result-display');
 
-      let selectedOperation = null;
+      let selectedOperation = "";
 
-      // Gestione selezione operatore
       opButtons.forEach(button => {
         button.addEventListener('click', () => {
           opButtons.forEach(btn => btn.classList.remove('active'));
@@ -173,43 +151,37 @@
         });
       });
 
-      // Calcolo del risultato
       equalsBtn.addEventListener('click', () => {
         const val1 = parseFloat(num1Input.value.replace(',', '.'));
         const val2 = parseFloat(num2Input.value.replace(',', '.'));
 
+        // Controllo validità dell'operazione basato solo su stringa
         if (isNaN(val1) || isNaN(val2)) {
-          resultDisplay.textContent = 'Inserisci numeri validi';
+          resultDisplay.textContent = "Errore: Inserisci numeri validi";
           return;
         }
 
-        if (!selectedOperation) {
-          resultDisplay.textContent = 'Seleziona un operatore';
+        if (selectedOperation === "") {
+          resultDisplay.textContent = "Errore: Seleziona un operatore";
           return;
         }
 
-        let result = 0;
-
-        switch (selectedOperation) {
-          case '+':
-            result = val1 + val2;
-            break;
-          case '-':
-            result = val1 - val2;
-            break;
-          case '*':
-            result = val1 * val2;
-            break;
-          case '/':
-            if (val2 === 0) {
-              resultDisplay.textContent = 'Impossibile dividere per 0';
-              return;
-            }
-            result = val1 / val2;
-            break;
+        let calcolo = 0;
+        if (selectedOperation === "+") calcolo = val1 + val2;
+        else if (selectedOperation === "-") calcolo = val1 - val2;
+        else if (selectedOperation === "*") calcolo = val1 * val2;
+        else if (selectedOperation === "/") {
+          if (val2 === 0) {
+            resultDisplay.textContent = "Errore: Divisione per 0";
+            return;
+          }
+          calcolo = val1 / val2;
         }
 
-        resultDisplay.textContent = `Risultato: ${Number(result.toFixed(4))}`;
+        // Costruzione dell'output utilizzando solo una stringa finale
+        let outputStringa = "Risultato: " + val1 + " " + selectedOperation + " " + val2 + " = " + calcolo;
+        
+        resultDisplay.textContent = outputStringa;
       });
     });
   </script>
