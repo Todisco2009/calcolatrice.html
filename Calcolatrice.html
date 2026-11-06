@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Semi-Calcolatrice Stringa</title>
+  <title>Semi-Calcolatrice Scalabile</title>
   <style>
+    /* VARIABLES: Utili per estendere o cambiare il tema grafico in futuro */
     :root {
       --bg-color: #f4f6f9;
       --card-bg: #ffffff;
       --primary-color: #2563eb;
+      --primary-hover: #1d4ed8;
       --accent-color: #10b981;
+      --accent-hover: #059669;
       --text-color: #1e293b;
       --border-color: #cbd5e1;
       --radius: 12px;
@@ -20,7 +23,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
@@ -32,76 +35,101 @@
       padding: 20px;
     }
 
+    /* CONTENITORE PRINCIPALE (Modulare) */
     .calculator-card {
-      background: var(--card-bg);
-      padding: 28px;
+      background-color: var(--card-bg);
+      width: 100%;
+      max-width: 380px;
+      padding: 24px;
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      width: 100%;
-      max-width: 360px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
     }
 
-    .calculator-title {
+    .calculator-card h2 {
       text-align: center;
       color: var(--text-color);
+      margin-bottom: 20px;
       font-size: 1.25rem;
     }
 
-    .input-group {
+    /* AREA INPUT */
+    .inputs-group {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+      margin-bottom: 20px;
     }
 
-    .input-group input {
+    .input-field {
       width: 100%;
       padding: 12px;
-      border: 1px solid var(--border-color);
-      border-radius: calc(var(--radius) - 4px);
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
       font-size: 1rem;
-      text-align: right;
       outline: none;
+      transition: border-color 0.2s;
     }
 
+    .input-field:focus {
+      border-color: var(--primary-color);
+    }
+
+    /* GRIGLIA OPERAZIONI: Struttura CSS Grid flessibile per future aggiunte */
     .operations-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
+      margin-bottom: 15px;
     }
 
     .btn {
       padding: 14px;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: bold;
-      border: 1px solid var(--border-color);
-      border-radius: calc(var(--radius) - 4px);
-      background: #f8fafc;
-      color: var(--text-color);
+      border: none;
+      border-radius: 8px;
       cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: #f1f5f9;
+      color: var(--text-color);
     }
 
-    .btn-op.active {
+    .btn:hover {
+      background-color: #e2e8f0;
+    }
+
+    /* Stato attivo dell'operatore selezionato */
+    .btn.active {
       background-color: var(--primary-color);
       color: white;
-      border-color: var(--primary-color);
     }
 
+    /* TASTO UGUALE */
     .btn-equals {
       width: 100%;
       background-color: var(--accent-color);
       color: white;
-      border-color: var(--accent-color);
+      font-size: 1.2rem;
+      padding: 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
 
+    .btn-equals:hover {
+      background-color: var(--accent-hover);
+    }
+
+    /* AREA RISULTATO */
     .result-display {
-      padding: 14px;
-      background-color: #f1f5f9;
-      border-radius: calc(var(--radius) - 4px);
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8fafc;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
       text-align: center;
-      font-weight: 600;
+      font-size: 1.1rem;
       color: var(--text-color);
       word-break: break-all;
     }
@@ -110,79 +138,95 @@
 <body>
 
   <div class="calculator-card">
-    <h2 class="calculator-title">Semi-Calcolatrice</h2>
+    <h2>Semi-Calcolatrice</h2>
 
-    <div class="input-group">
-      <input type="text" id="num1" placeholder="Primo numero" autocomplete="off">
-      <input type="text" id="num2" placeholder="Secondo numero" autocomplete="off">
+    <!-- I due input type="text" -->
+    <div class="inputs-group">
+      <input type="text" id="num1" class="input-field" placeholder="Primo numero">
+      <input type="text" id="num2" class="input-field" placeholder="Secondo numero">
     </div>
 
+    <!-- Tasti delle 4 operazioni principali -->
     <div class="operations-grid">
-      <button type="button" class="btn btn-op" data-op="+">+</button>
-      <button type="button" class="btn btn-op" data-op="-">-</button>
-      <button type="button" class="btn btn-op" data-op="*">&times;</button>
-      <button type="button" class="btn btn-op" data-op="/">/</button>
+      <button class="btn op-btn" data-op="+">+</button>
+      <button class="btn op-btn" data-op="-">-</button>
+      <button class="btn op-btn" data-op="*">&times;</button>
+      <button class="btn op-btn" data-op="/">&divide;</button>
     </div>
 
-    <div class="action-group">
-      <button type="button" id="btn-equals" class="btn btn-equals">=</button>
-    </div>
+    <!-- Il quinto tasto (Uguale) -->
+    <button id="calc-btn" class="btn-equals">=</button>
 
-    <div class="result-display" id="result-display">
-      Seleziona un'operazione e premi =
+    <!-- Visualizzazione risultato -->
+    <div class="result-display" id="result">
+      Inserisci i dati e seleziona un'operazione
     </div>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const num1Input = document.getElementById('num1');
-      const num2Input = document.getElementById('num2');
-      const opButtons = document.querySelectorAll('.btn-op');
-      const equalsBtn = document.getElementById('btn-equals');
-      const resultDisplay = document.getElementById('result-display');
+    // Variabile per memorizzare l'operazione selezionata
+    let selectedOperation = null;
 
-      let selectedOperation = "";
+    // Riferimenti agli elementi DOM
+    const num1Input = document.getElementById('num1');
+    const num2Input = document.getElementById('num2');
+    const opButtons = document.querySelectorAll('.op-btn');
+    const calcBtn = document.getElementById('calc-btn');
+    const resultDisplay = document.getElementById('result');
 
-      opButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          opButtons.forEach(btn => btn.classList.remove('active'));
-          button.classList.add('active');
-          selectedOperation = button.dataset.op;
-        });
+    // Gestione della selezione dell'operazione
+    opButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Rimuove lo stato attivo da tutti i tasti
+        opButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Imposta l'operazione corrente e attiva il pulsante premuto
+        selectedOperation = button.getAttribute('data-op');
+        button.classList.add('active');
       });
+    });
 
-      equalsBtn.addEventListener('click', () => {
-        const val1 = parseFloat(num1Input.value.replace(',', '.'));
-        const val2 = parseFloat(num2Input.value.replace(',', '.'));
+    // Calcolo al click sul tasto '='
+    calcBtn.addEventListener('click', () => {
+      const val1 = parseFloat(num1Input.value.replace(',', '.'));
+      const val2 = parseFloat(num2Input.value.replace(',', '.'));
 
-        // Controllo validità dell'operazione basato solo su stringa
-        if (isNaN(val1) || isNaN(val2)) {
-          resultDisplay.textContent = "Errore: Inserisci numeri validi";
-          return;
-        }
+      // Validazione Input
+      if (isNaN(val1) || isNaN(val2)) {
+        resultDisplay.textContent = "Inserisci numeri validi in entrambi i campi.";
+        return;
+      }
 
-        if (selectedOperation === "") {
-          resultDisplay.textContent = "Errore: Seleziona un operatore";
-          return;
-        }
+      if (!selectedOperation) {
+        resultDisplay.textContent = "Seleziona un'operazione (+, -, ×, ÷).";
+        return;
+      }
 
-        let calcolo = 0;
-        if (selectedOperation === "+") calcolo = val1 + val2;
-        else if (selectedOperation === "-") calcolo = val1 - val2;
-        else if (selectedOperation === "*") calcolo = val1 * val2;
-        else if (selectedOperation === "/") {
+      let res;
+      switch (selectedOperation) {
+        case '+':
+          res = val1 + val2;
+          break;
+        case '-':
+          res = val1 - val2;
+          break;
+        case '*':
+          res = val1 * val2;
+          break;
+        case '/':
           if (val2 === 0) {
-            resultDisplay.textContent = "Errore: Divisione per 0";
+            resultDisplay.textContent = "Errore: Divisione per zero!";
             return;
           }
-          calcolo = val1 / val2;
-        }
+          res = val1 / val2;
+          break;
+        default:
+          res = "Operazione non valida";
+      }
 
-        // Costruzione dell'output utilizzando solo una stringa finale
-        let outputStringa = "Risultato: " + val1 + " " + selectedOperation + " " + val2 + " = " + calcolo;
-        
-        resultDisplay.textContent = outputStringa;
-      });
+      // Arrotondamento per pulizia visiva
+      res = Math.round(res * 1000000) / 1000000;
+      resultDisplay.innerHTML = `<strong>Risultato:</strong> ${res}`;
     });
   </script>
 
