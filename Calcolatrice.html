@@ -2,232 +2,88 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Semi-Calcolatrice Scalabile</title>
+  <title>Calcolatrice Semplice</title>
   <style>
-    /* VARIABLES: Utili per estendere o cambiare il tema grafico in futuro */
-    :root {
-      --bg-color: #f4f6f9;
-      --card-bg: #ffffff;
-      --primary-color: #2563eb;
-      --primary-hover: #1d4ed8;
-      --accent-color: #10b981;
-      --accent-hover: #059669;
-      --text-color: #1e293b;
-      --border-color: #cbd5e1;
-      --radius: 12px;
-      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
-      background-color: var(--bg-color);
+      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      background-color: #f0f2f5;
+    }
+    .box {
+      background: white;
       padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      width: 250px;
     }
-
-    /* CONTENITORE PRINCIPALE (Modulare) */
-    .calculator-card {
-      background-color: var(--card-bg);
+    input, button, .result {
       width: 100%;
-      max-width: 380px;
-      padding: 24px;
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      margin-bottom: 10px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 16px;
     }
-
-    .calculator-card h2 {
-      text-align: center;
-      color: var(--text-color);
-      margin-bottom: 20px;
-      font-size: 1.25rem;
-    }
-
-    /* AREA INPUT */
-    .inputs-group {
+    .buttons {
       display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-bottom: 20px;
+      gap: 5px;
     }
-
-    .input-field {
-      width: 100%;
-      padding: 12px;
-      border: 2px solid var(--border-color);
-      border-radius: 8px;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
-    .input-field:focus {
-      border-color: var(--primary-color);
-    }
-
-    /* GRIGLIA OPERAZIONI: Struttura CSS Grid flessibile per future aggiunte */
-    .operations-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-      margin-bottom: 15px;
-    }
-
-    .btn {
-      padding: 14px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
+    .buttons button {
+      flex: 1;
       cursor: pointer;
-      transition: all 0.2s ease;
-      background-color: #f1f5f9;
-      color: var(--text-color);
-    }
-
-    .btn:hover {
-      background-color: #e2e8f0;
-    }
-
-    /* Stato attivo dell'operatore selezionato */
-    .btn.active {
-      background-color: var(--primary-color);
-      color: white;
-    }
-
-    /* TASTO UGUALE */
-    .btn-equals {
-      width: 100%;
-      background-color: var(--accent-color);
-      color: white;
-      font-size: 1.2rem;
-      padding: 14px;
-      border-radius: 8px;
-      border: none;
-      cursor: pointer;
-      transition: background-color 0.2s;
-    }
-
-    .btn-equals:hover {
-      background-color: var(--accent-hover);
-    }
-
-    /* AREA RISULTATO */
-    .result-display {
-      margin-top: 20px;
-      padding: 15px;
-      background-color: #f8fafc;
-      border: 1px dashed var(--border-color);
-      border-radius: 8px;
-      text-align: center;
-      font-size: 1.1rem;
-      color: var(--text-color);
-      word-break: break-all;
     }
   </style>
 </head>
 <body>
 
-  <div class="calculator-card">
-    <h2>Semi-Calcolatrice</h2>
+  <div class="box">
+    <h3>Calcolatrice Base</h3>
+    
+    <!-- I due input di testo -->
+    <input type="text" id="n1" placeholder="Numero 1">
+    <input type="text" id="n2" placeholder="Numero 2">
 
-    <!-- I due input type="text" -->
-    <div class="inputs-group">
-      <input type="text" id="num1" class="input-field" placeholder="Primo numero">
-      <input type="text" id="num2" class="input-field" placeholder="Secondo numero">
-    </div>
-
-    <!-- Tasti delle 4 operazioni principali -->
-    <div class="operations-grid">
-      <button class="btn op-btn" data-op="+">+</button>
-      <button class="btn op-btn" data-op="-">-</button>
-      <button class="btn op-btn" data-op="*">&times;</button>
-      <button class="btn op-btn" data-op="/">&divide;</button>
+    <!-- I 4 tasti delle operazioni -->
+    <div class="buttons">
+      <button onclick="op='+'">+</button>
+      <button onclick="op='-'">-</button>
+      <button onclick="op='*'">*</button>
+      <button onclick="op='/'">/</button>
     </div>
 
     <!-- Il quinto tasto (Uguale) -->
-    <button id="calc-btn" class="btn-equals">=</button>
+    <button onclick="calcola()">=</button>
 
-    <!-- Visualizzazione risultato -->
-    <div class="result-display" id="result">
-      Inserisci i dati e seleziona un'operazione
-    </div>
+    <!-- Risultato -->
+    <div class="result" id="risultato">Risultato: -</div>
   </div>
 
   <script>
-    // Variabile per memorizzare l'operazione selezionata
-    let selectedOperation = null;
+    let op = null; // Memorizza l'operazione scelta
 
-    // Riferimenti agli elementi DOM
-    const num1Input = document.getElementById('num1');
-    const num2Input = document.getElementById('num2');
-    const opButtons = document.querySelectorAll('.op-btn');
-    const calcBtn = document.getElementById('calc-btn');
-    const resultDisplay = document.getElementById('result');
+    function calcola() {
+      let n1 = parseFloat(document.getElementById('n1').value);
+      let n2 = parseFloat(document.getElementById('n2').value);
+      let res = 0;
 
-    // Gestione della selezione dell'operazione
-    opButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Rimuove lo stato attivo da tutti i tasti
-        opButtons.forEach(btn => btn.classList.remove('active'));
-        
-        // Imposta l'operazione corrente e attiva il pulsante premuto
-        selectedOperation = button.getAttribute('data-op');
-        button.classList.add('active');
-      });
-    });
-
-    // Calcolo al click sul tasto '='
-    calcBtn.addEventListener('click', () => {
-      const val1 = parseFloat(num1Input.value.replace(',', '.'));
-      const val2 = parseFloat(num2Input.value.replace(',', '.'));
-
-      // Validazione Input
-      if (isNaN(val1) || isNaN(val2)) {
-        resultDisplay.textContent = "Inserisci numeri validi in entrambi i campi.";
+      if (isNaN(n1) || isNaN(n2)) {
+        document.getElementById('risultato').innerText = "Inserisci due numeri!";
         return;
       }
 
-      if (!selectedOperation) {
-        resultDisplay.textContent = "Seleziona un'operazione (+, -, ×, ÷).";
+      if (op === '+') res = n1 + n2;
+      else if (op === '-') res = n1 - n2;
+      else if (op === '*') res = n1 * n2;
+      else if (op === '/') res = n2 !== 0 ? n1 / n2 : "Errore (div/0)";
+      else {
+        document.getElementById('risultato').innerText = "Scegli un'operazione!";
         return;
       }
 
-      let res;
-      switch (selectedOperation) {
-        case '+':
-          res = val1 + val2;
-          break;
-        case '-':
-          res = val1 - val2;
-          break;
-        case '*':
-          res = val1 * val2;
-          break;
-        case '/':
-          if (val2 === 0) {
-            resultDisplay.textContent = "Errore: Divisione per zero!";
-            return;
-          }
-          res = val1 / val2;
-          break;
-        default:
-          res = "Operazione non valida";
-      }
-
-      // Arrotondamento per pulizia visiva
-      res = Math.round(res * 1000000) / 1000000;
-      resultDisplay.innerHTML = `<strong>Risultato:</strong> ${res}`;
-    });
+      document.getElementById('risultato').innerText = "Risultato: " + res;
+    }
   </script>
 
 </body>
